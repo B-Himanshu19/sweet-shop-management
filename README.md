@@ -5,12 +5,9 @@ A full-stack web application for managing a sweet shop inventory, built with Nod
 ## 🚀 Quick Start - Open in Browser
 
 **View Repository:** [Click here to open the repository](https://github.com/B-Himanshu19/Sweet-shop)
+**Project Live:** [Click here](https://sweet-shop-management-mocha.vercel.app)
 
-**Open in Browser Editor:** [Click here to edit in GitHub.dev](https://github.dev/B-Himanshu19/Sweet-shop)
 
-**Open in Codespaces:** [Click here to open in GitHub Codespaces](https://codespaces.new/B-Himanshu19/Sweet-shop)
-
-> ✅ **Repository is live!** Click any link above to view or edit the project in your browser.
 
 ## 🎯 Project Overview
 
@@ -435,10 +432,7 @@ The application includes the following key user interfaces:
 ## 🚢 Deployment
 
 ### Backend Deployment
-The backend can be deployed to platforms like:
-- Heroku
-- Railway
-- Render
+The backend is deployed to:
 - AWS EC2
 
 Make sure to:
@@ -447,11 +441,8 @@ Make sure to:
 - Enable HTTPS
 
 ### Frontend Deployment
-The frontend can be deployed to:
-- Vercel (recommended)
-- Netlify
-- GitHub Pages
-- AWS S3 + CloudFront
+The frontend deployed to:
+- Vercel 
 
 Update the API URL in the frontend environment variables before deploying.
 
