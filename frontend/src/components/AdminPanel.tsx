@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Sweet, sweetsAPI } from '../services/api';
+import { Sweet, sweetsAPI, Purchase, purchasesAPI } from '../services/api';
 import SweetForm from './SweetForm';
 
 const AdminPanel: React.FC = () => {
+  // Tab state
+  const [activeTab, setActiveTab] = useState<'sweets' | 'purchases'>('sweets');
+  
+  // Sweets state
   const [sweets, setSweets] = useState<Sweet[]>([]);
   const [filteredSweets, setFilteredSweets] = useState<Sweet[]>([]);
+  
+  // Purchases state
+  const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const [filteredPurchases, setFilteredPurchases] = useState<Purchase[]>([]);
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -14,8 +23,27 @@ const AdminPanel: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
 
   useEffect(() => {
-    loadSweets();
-  }, []);
+    if (activeTab === 'sweets') {
+      loadSweets();
+    } else {
+      loadPurchases();
+    }
+  }, [activeTab]);
+
+  const loadPurchases = async () => {
+    try {
+      setLoading(true);
+      const data = await purchasesAPI.getAll();
+      setPurchases(data);
+      setFilteredPurchases(data);
+      setError('');
+    } catch (err: any) {
+      setError('Failed to load purchase history');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadSweets = async () => {
     try {
@@ -31,6 +59,12 @@ const AdminPanel: React.FC = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (activeTab === 'sweets') {
+      loadSweets();
+    }
+  }, [activeTab]);
 
   // Filter sweets based on search and category
   useEffect(() => {
@@ -49,6 +83,25 @@ const AdminPanel: React.FC = () => {
 
     setFilteredSweets(filtered);
   }, [searchTerm, selectedCategory, sweets]);
+
+  // Filter purchases based on search
+  useEffect(() => {
+    let filtered = purchases;
+
+    if (searchTerm) {
+      filtered = filtered.filter(purchase =>
+        purchase.sweet_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        purchase.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (purchase.username && purchase.username.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }
+
+    if (selectedCategory) {
+      filtered = filtered.filter(purchase => purchase.category === selectedCategory);
+    }
+
+    setFilteredPurchases(filtered);
+  }, [searchTerm, selectedCategory, purchases]);
 
   // Get unique categories
   const categories = Array.from(new Set(sweets.map(sweet => sweet.category))).sort();
@@ -159,39 +212,84 @@ const AdminPanel: React.FC = () => {
               Manage your sweet inventory and track sales
             </p>
           </div>
+          {activeTab === 'sweets' && (
+            <button
+              onClick={() => { setEditingSweet(null); setShowForm(true); }}
+              style={{
+                padding: '14px 28px',
+                background: '#1a1a2e',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '15px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 4px 12px rgba(26, 26, 46, 0.2)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#0f0f1e';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(26, 26, 46, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#1a1a2e';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(26, 26, 46, 0.2)';
+              }}
+            >
+              <span style={{ fontSize: '18px' }}>+</span> Add New Sweet
+            </button>
+          )}
+        </div>
+
+        {/* Tabs */}
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          marginBottom: '30px',
+          borderBottom: '1px solid #e5e7eb',
+          paddingBottom: '0'
+        }}>
           <button
-            onClick={() => { setEditingSweet(null); setShowForm(true); }}
+            onClick={() => setActiveTab('sweets')}
             style={{
-              padding: '14px 28px',
-              background: '#1a1a2e',
-              color: '#fff',
+              padding: '12px 24px',
+              background: activeTab === 'sweets' ? '#1a1a2e' : 'transparent',
+              color: activeTab === 'sweets' ? '#fff' : '#6b7280',
               border: 'none',
-              borderRadius: '8px',
-              fontSize: '15px',
-              fontWeight: '600',
+              borderRadius: '8px 8px 0 0',
+              fontSize: '14px',
+              fontWeight: activeTab === 'sweets' ? '600' : '500',
               cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 4px 12px rgba(26, 26, 46, 0.2)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#0f0f1e';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 16px rgba(26, 26, 46, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#1a1a2e';
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(26, 26, 46, 0.2)';
+              transition: 'all 0.3s ease'
             }}
           >
-            <span style={{ fontSize: '18px' }}>+</span> Add New Sweet
+            🍬 Sweets Management
+          </button>
+          <button
+            onClick={() => setActiveTab('purchases')}
+            style={{
+              padding: '12px 24px',
+              background: activeTab === 'purchases' ? '#1a1a2e' : 'transparent',
+              color: activeTab === 'purchases' ? '#fff' : '#6b7280',
+              border: 'none',
+              borderRadius: '8px 8px 0 0',
+              fontSize: '14px',
+              fontWeight: activeTab === 'purchases' ? '600' : '500',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            📦 Purchase History
           </button>
         </div>
 
         {/* Stats Cards */}
+        {activeTab === 'sweets' && (
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
@@ -239,6 +337,7 @@ const AdminPanel: React.FC = () => {
             <div style={{ fontSize: '32px', fontWeight: '700', color: '#1f2937' }}>{categories.length}</div>
           </div>
         </div>
+        )}
 
         {/* Alerts */}
         {message && (
@@ -271,6 +370,8 @@ const AdminPanel: React.FC = () => {
         )}
 
         {/* Search and Filter */}
+        {activeTab === 'sweets' && (
+        <>
         <div style={{
           background: '#fff',
           padding: '24px',
@@ -566,6 +667,158 @@ const AdminPanel: React.FC = () => {
               );
             })}
           </div>
+        )}
+        </>
+        )}
+
+        {/* Purchases Tab */}
+        {activeTab === 'purchases' && (
+        <>
+        {/* Search for Purchases */}
+        <div style={{
+          background: '#fff',
+          padding: '24px',
+          borderRadius: '12px',
+          marginBottom: '32px',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          border: '1px solid #e5e7eb',
+          display: 'flex',
+          gap: '15px',
+          flexWrap: 'wrap',
+          alignItems: 'center'
+        }}>
+          <div style={{ flex: '1', minWidth: '200px' }}>
+            <input
+              type="text"
+              placeholder="Search by product, category, or username..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px 15px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                fontSize: '14px'
+              }}
+            />
+          </div>
+          <div style={{ minWidth: '180px' }}>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px 15px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                fontSize: '14px',
+                background: '#fff',
+                cursor: 'pointer'
+              }}
+            >
+              <option value="">All Categories</option>
+              {Array.from(new Set(purchases.map(p => p.category))).sort().map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+          {(searchTerm || selectedCategory) && (
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedCategory('');
+              }}
+              style={{
+                padding: '10px 20px',
+                background: '#f3f4f6',
+                color: '#6b7280',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '14px',
+                cursor: 'pointer',
+                fontWeight: '500'
+              }}
+            >
+              Clear Filters
+            </button>
+          )}
+        </div>
+
+        {/* Purchases Table */}
+        {filteredPurchases.length === 0 ? (
+          <div style={{
+            background: '#fff',
+            padding: '60px 20px',
+            borderRadius: '12px',
+            textAlign: 'center',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #e5e7eb'
+          }}>
+            <p style={{ color: '#9ca3af', fontSize: '16px' }}>No purchases found</p>
+          </div>
+        ) : (
+          <div style={{
+            background: '#fff',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #e5e7eb'
+          }}>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{
+                width: '100%',
+                borderCollapse: 'collapse'
+              }}>
+                <thead>
+                  <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: '600', color: '#1f2937', fontSize: '14px' }}>User</th>
+                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: '600', color: '#1f2937', fontSize: '14px' }}>Product</th>
+                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: '600', color: '#1f2937', fontSize: '14px' }}>Category</th>
+                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: '600', color: '#1f2937', fontSize: '14px' }}>Quantity</th>
+                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: '600', color: '#1f2937', fontSize: '14px' }}>Price</th>
+                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: '600', color: '#1f2937', fontSize: '14px' }}>Total</th>
+                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: '600', color: '#1f2937', fontSize: '14px' }}>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredPurchases.map((purchase) => (
+                    <tr key={purchase.id} style={{ borderBottom: '1px solid #e5e7eb' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#f9fafb';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '';
+                      }}
+                    >
+                      <td style={{ padding: '16px 20px', color: '#1f2937', fontSize: '14px' }}>
+                        <strong>{purchase.username || 'N/A'}</strong>
+                      </td>
+                      <td style={{ padding: '16px 20px', color: '#1f2937', fontSize: '14px' }}>
+                        {purchase.sweet_name}
+                      </td>
+                      <td style={{ padding: '16px 20px', color: '#6b7280', fontSize: '14px' }}>
+                        {purchase.category}
+                      </td>
+                      <td style={{ padding: '16px 20px', color: '#1f2937', fontSize: '14px' }}>
+                        {purchase.quantity} kg
+                      </td>
+                      <td style={{ padding: '16px 20px', color: '#1f2937', fontSize: '14px' }}>
+                        ₹{purchase.price.toFixed(0)}/kg
+                      </td>
+                      <td style={{ padding: '16px 20px', fontWeight: '600', color: '#10b981', fontSize: '14px' }}>
+                        ₹{(purchase.price * purchase.quantity).toFixed(0)}
+                      </td>
+                      <td style={{ padding: '16px 20px', color: '#6b7280', fontSize: '14px' }}>
+                        {new Date(purchase.purchased_at).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+        </>
         )}
       </div>
     </div>

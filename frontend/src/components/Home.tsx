@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sweet, sweetsAPI } from '../services/api';
-import SweetCard from './SweetCard';
 import ProductDetailModal from './ProductDetailModal';
 
 const Home: React.FC = () => {
@@ -9,7 +8,7 @@ const Home: React.FC = () => {
   const [featuredSweets, setFeaturedSweets] = useState<Sweet[]>([]);
   const [loading, setLoading] = useState(true);
   const [showProductDetail, setShowProductDetail] = useState<Sweet | null>(null);
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const navigate = useNavigate();
 
@@ -17,57 +16,26 @@ const Home: React.FC = () => {
     loadSweets();
   }, []);
 
+  // Slideshow auto-rotation
+  useEffect(() => {
+    if (featuredSweets.length === 0 || isPaused) return;
+    const interval = setInterval(() => {
+      setCurrentSlideIndex((prev) => (prev + 1) % featuredSweets.length);
+    }, 5000); // Change slide every 5 seconds
+    return () => clearInterval(interval);
+  }, [featuredSweets.length, isPaused]);
+
   const loadSweets = async () => {
     try {
       setLoading(true);
       const data = await sweetsAPI.getAll();
       setSweets(data);
-      // Get first 8 sweets for slideshow (we'll show 2 at a time)
-      setFeaturedSweets(data.slice(0, 8));
+      setFeaturedSweets(data.slice(0, 5));
     } catch (err: any) {
       console.error('Failed to load sweets:', err);
     } finally {
       setLoading(false);
     }
-  };
-
-  // Slideshow auto-play
-  useEffect(() => {
-    if (featuredSweets.length === 0 || isPaused) return;
-
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => {
-        // We show 2 sweets at a time, so we have featuredSweets.length / 2 slides
-        const maxSlides = Math.ceil(featuredSweets.length / 2);
-        return (prev + 1) % maxSlides;
-      });
-    }, 4000); // Change slide every 4 seconds
-
-    return () => clearInterval(interval);
-  }, [featuredSweets.length, isPaused]);
-
-  const nextSlide = () => {
-    const maxSlides = Math.ceil(featuredSweets.length / 2);
-    setCurrentSlide((prev) => (prev + 1) % maxSlides);
-  };
-
-  const prevSlide = () => {
-    const maxSlides = Math.ceil(featuredSweets.length / 2);
-    setCurrentSlide((prev) => (prev - 1 + maxSlides) % maxSlides);
-  };
-
-  const togglePause = () => {
-    setIsPaused(!isPaused);
-  };
-
-  // Get current slide sweets (2 sweets per slide)
-  const getCurrentSlideSweets = () => {
-    const startIndex = currentSlide * 2;
-    return featuredSweets.slice(startIndex, startIndex + 2);
-  };
-
-  const handlePurchase = async (id: number, weight: number): Promise<void> => {
-    // This will be handled by ProductDetailModal
   };
 
   if (loading) {
@@ -81,278 +49,134 @@ const Home: React.FC = () => {
     );
   }
 
+  const currentSweet = featuredSweets[currentSlideIndex];
+
   return (
-    <div style={{ background: '#ffffff', minHeight: '100vh' }}>
-      {/* Hero Banner Section - Full Width */}
-      <div style={{ 
-        width: '100%',
-        marginBottom: '0',
+    <div style={{ background: '#f9f9f9', minHeight: '100vh' }}>
+      {/* Hero Banner - Product Images & Text */}
+      <div style={{
         position: 'relative',
+        height: '280px',
+        background: 'linear-gradient(135deg, #7cb342 0%, #558b2f 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '40px 60px',
         overflow: 'hidden'
       }}>
+        {/* Left Side: 3 Rotating Circular Images */}
         <div style={{
-          background: 'linear-gradient(135deg, #2d5016 0%, #3d7a1f 30%, #4a9a26 100%)',
-          position: 'relative',
-          padding: '50px 60px',
-          minHeight: '400px',
           display: 'flex',
+          gap: '3px',
+          flex: 0.45,
           alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '60px'
+          justifyContent: 'flex-start'
         }}>
-          {/* Textured overlay pattern */}
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundImage: `
-              repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                rgba(255, 255, 255, 0.03) 10px,
-                rgba(255, 255, 255, 0.03) 20px
-              )
-            `,
-            opacity: 0.5,
-            zIndex: 1
-          }} />
-
-          {/* Left Side - Product Images (Slideshow) */}
-          <div style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '20px',
-            maxWidth: '500px',
-            position: 'relative',
-            zIndex: 2,
-            minHeight: '300px'
-          }}>
-            {getCurrentSlideSweets().map((sweet, index) => (
-              <div
-                key={`${sweet.id}-${currentSlide}`}
+          {featuredSweets.slice(currentSlideIndex, currentSlideIndex + 3).map((sweet, index) => (
+            <div
+              key={index}
+              style={{
+                width: '100px',
+                height: '100px',
+                borderRadius: '50%',
+                background: '#fff',
+                border: '4px solid #fff',
+                overflow: 'hidden',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+                transition: 'all 0.5s ease-in-out'
+              }}
+            >
+              <img
+                src={sweet.image_url || 'https://via.placeholder.com/100x100'}
+                alt={sweet.name}
                 style={{
-                  width: '180px',
-                  height: '180px',
-                  borderRadius: '50%',
-                  overflow: 'hidden',
-                  border: '4px solid rgba(255, 255, 255, 0.9)',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
-                  background: '#fff',
-                  position: 'relative',
-                  transform: index === 0 ? 'translateY(-15px)' : 'translateY(15px)',
-                  transition: 'transform 0.5s ease, opacity 0.5s ease',
-                  cursor: 'pointer',
-                  animation: 'slideIn 0.5s ease'
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover'
                 }}
-                onClick={() => setShowProductDetail(sweet)}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = (index === 0 ? 'translateY(-25px)' : 'translateY(25px)') + ' scale(1.05)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = index === 0 ? 'translateY(-15px)' : 'translateY(15px)';
-                }}
-              >
-                <img
-                  src={sweet.image_url || 'https://images.unsplash.com/photo-1606312619070-d48b4bc98fb0?w=400&h=300&fit=crop'}
-                  alt={sweet.name}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover'
-                  }}
-                />
-              </div>
-            ))}
-          </div>
+              />
+            </div>
+          ))}
+        </div>
 
-          {/* Right Side - Text Content */}
-          <div style={{
-            flex: 1,
-            maxWidth: '600px',
-            position: 'relative',
-            zIndex: 2,
-            color: '#fff'
+        {/* Right Side: Text Content */}
+        <div style={{
+          flex: 0.55,
+          paddingLeft: '60px'
+        }}>
+          <h1 style={{
+            fontSize: '48px',
+            fontWeight: 'bold',
+            color: '#fff',
+            margin: '0 0 20px 0',
+            lineHeight: '1.2'
           }}>
-            <h1 style={{
-              fontSize: '64px',
-              fontWeight: '800',
-              marginBottom: '16px',
-              color: '#ffffff',
-              letterSpacing: '-2px',
-              lineHeight: '1.1',
-              textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
-            }}>
-              RECIPES
-            </h1>
-            <p style={{
-              fontSize: '24px',
-              fontWeight: '600',
-              marginBottom: '24px',
-              color: 'rgba(255, 255, 255, 0.95)',
-              textShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
-            }}>
-              100% Organic and Pure
-            </p>
-            <p style={{
-              fontSize: '16px',
-              lineHeight: '1.6',
-              color: 'rgba(255, 255, 255, 0.9)',
-              marginBottom: '24px',
-              textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-              maxWidth: '500px'
-            }}>
-              We at Sweet Shop are bringing back the bygone treasure trove that comprises not only healthy but also scrumptious and luscious sweet snacks.
-            </p>
-          </div>
+            AUTHENTIC INDIAN SWEETS
+          </h1>
+          <p style={{
+            fontSize: '24px',
+            color: '#fff',
+            margin: '0 0 30px 0',
+            fontWeight: '500'
+          }}>
+            100% Organic and pure
+          </p>
 
-          {/* Carousel Controls - Bottom Left */}
+          {/* Controls at Bottom */}
           <div style={{
-            position: 'absolute',
-            bottom: '30px',
-            left: '60px',
             display: 'flex',
             gap: '12px',
-            zIndex: 3,
             alignItems: 'center'
           }}>
+            {/* Pause/Play Button */}
             <button
-              onClick={togglePause}
+              onClick={() => setIsPaused(!isPaused)}
               style={{
-                width: '50px',
-                height: '50px',
-                background: 'rgba(255, 255, 255, 0.95)',
-                border: '2px solid rgba(0, 0, 0, 0.1)',
-                borderRadius: '8px',
+                width: '44px',
+                height: '44px',
+                background: '#fff',
+                border: '2px solid #ddd',
+                borderRadius: '6px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                fontSize: '20px',
-                color: '#2d5016',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-                transition: 'all 0.2s ease'
+                fontSize: '18px',
+                fontWeight: 'bold',
+                color: '#333',
+                transition: 'all 0.3s ease'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#fff';
-                e.currentTarget.style.transform = 'scale(1.1)';
+                e.currentTarget.style.background = '#f5f5f5';
+                e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
-                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.background = '#fff';
+                e.currentTarget.style.boxShadow = 'none';
               }}
             >
               {isPaused ? '▶' : '⏸'}
             </button>
-            <button
-              onClick={prevSlide}
-              style={{
-                width: '50px',
-                height: '50px',
-                background: 'rgba(255, 255, 255, 0.95)',
-                border: '2px solid #000',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                fontSize: '20px',
-                color: '#2d5016',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#fff';
-                e.currentTarget.style.transform = 'scale(1.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-            >
-              ◀
-            </button>
-            <button
-              onClick={nextSlide}
-              style={{
-                width: '50px',
-                height: '50px',
-                background: 'rgba(255, 255, 255, 0.95)',
-                border: '2px solid rgba(0, 0, 0, 0.1)',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                fontSize: '20px',
-                color: '#2d5016',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#fff';
-                e.currentTarget.style.transform = 'scale(1.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-            >
-              ▶
-            </button>
-            <button
-              onClick={() => navigate('/sweets')}
-              style={{
-                padding: '12px 24px',
-                background: 'rgba(255, 255, 255, 0.95)',
-                border: '2px solid rgba(0, 0, 0, 0.1)',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                fontSize: '15px',
-                fontWeight: '600',
-                color: '#2d5016',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-                transition: 'all 0.2s ease',
-                marginLeft: '8px'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#fff';
-                e.currentTarget.style.transform = 'translateX(4px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
-                e.currentTarget.style.transform = 'translateX(0)';
-              }}
+
+            {/* View All Products Link */}
+            <span style={{
+              color: '#fff',
+              fontSize: '16px',
+              fontWeight: '600',
+              marginLeft: '12px',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+            onClick={() => navigate('/sweets')}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.textDecoration = 'underline';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.textDecoration = 'none';
+            }}
             >
               View all products →
-            </button>
-            {/* Slide Indicators */}
-            <div style={{
-              display: 'flex',
-              gap: '8px',
-              marginLeft: '16px',
-              alignItems: 'center'
-            }}>
-              {Array.from({ length: Math.ceil(featuredSweets.length / 2) }).map((_, index) => (
-                <div
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  style={{
-                    width: currentSlide === index ? '24px' : '8px',
-                    height: '8px',
-                    borderRadius: '4px',
-                    background: currentSlide === index ? '#fff' : 'rgba(255, 255, 255, 0.5)',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                />
-              ))}
-            </div>
+            </span>
           </div>
         </div>
       </div>
@@ -361,33 +185,34 @@ const Home: React.FC = () => {
       <div style={{
         maxWidth: '1400px',
         margin: '0 auto',
-        padding: '80px 20px',
-        background: '#ffffff'
+        padding: '80px 20px'
       }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '1fr 3fr',
-          gap: '40px',
+          gridTemplateColumns: '280px 1fr',
+          gap: '50px',
           alignItems: 'start'
         }}>
-          {/* Left Side - Featured Products Banner */}
-          <div style={{
-            position: 'relative',
-            borderRadius: '16px',
-            overflow: 'hidden',
-            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
-            cursor: 'pointer'
-          }}
-          onClick={() => navigate('/sweets')}
+          {/* Left: Featured Products Banner */}
+          <div 
+            style={{
+              position: 'relative',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+              cursor: 'pointer',
+              height: '500px'
+            }}
+            onClick={() => navigate('/sweets')}
           >
             {featuredSweets[0] && (
               <>
                 <img
-                  src={featuredSweets[0].image_url || 'https://images.unsplash.com/photo-1606312619070-d48b4bc98fb0?w=400&h=300&fit=crop'}
+                  src={featuredSweets[0].image_url || 'https://via.placeholder.com/280x500'}
                   alt={featuredSweets[0].name}
                   style={{
                     width: '100%',
-                    height: '500px',
+                    height: '100%',
                     objectFit: 'cover'
                   }}
                 />
@@ -406,17 +231,16 @@ const Home: React.FC = () => {
                     borderRadius: '8px',
                     display: 'inline-block',
                     marginBottom: '12px',
-                    fontSize: '18px',
+                    fontSize: '16px',
                     fontWeight: '700',
                     letterSpacing: '0.5px'
                   }}>
                     Featured Products
                   </div>
                   <div style={{
-                    fontSize: '16px',
+                    fontSize: '14px',
                     fontWeight: '600',
-                    marginTop: '8px',
-                    cursor: 'pointer'
+                    marginTop: '8px'
                   }}>
                     VIEW ALL
                   </div>
@@ -425,12 +249,12 @@ const Home: React.FC = () => {
             )}
           </div>
 
-          {/* Right Side - Product Grid */}
+          {/* Right: Product Grid */}
           <div>
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '24px'
+              gap: '30px'
             }}>
               {featuredSweets.slice(0, 4).map((sweet) => (
                 <div
@@ -456,12 +280,12 @@ const Home: React.FC = () => {
                 >
                   <div style={{
                     width: '100%',
-                    height: '200px',
+                    height: '140px',
                     overflow: 'hidden',
                     background: '#f9fafb'
                   }}>
                     <img
-                      src={sweet.image_url || 'https://images.unsplash.com/photo-1606312619070-d48b4bc98fb0?w=400&h=300&fit=crop'}
+                      src={sweet.image_url || 'https://via.placeholder.com/400x300'}
                       alt={sweet.name}
                       style={{
                         width: '100%',
@@ -470,13 +294,13 @@ const Home: React.FC = () => {
                       }}
                     />
                   </div>
-                  <div style={{ padding: '20px' }}>
+                  <div style={{ padding: '12px 15px' }}>
                     <h3 style={{
-                      fontSize: '18px',
+                      fontSize: '16px',
                       fontWeight: '600',
                       color: '#1f2937',
-                      marginBottom: '8px',
-                      lineHeight: '1.4'
+                      margin: '0 0 6px 0',
+                      lineHeight: '1.3'
                     }}>
                       {sweet.name}
                     </h3>
@@ -493,10 +317,10 @@ const Home: React.FC = () => {
                       {sweet.category}
                     </div>
                     <div style={{
-                      fontSize: '20px',
+                      fontSize: '16px',
                       fontWeight: '700',
                       color: '#1a1a2e',
-                      marginTop: '8px'
+                      marginTop: '6px'
                     }}>
                       From ₹{sweet.price.toFixed(0)}
                     </div>
