@@ -21,7 +21,7 @@ async function testRegister() {
     await new Promise(r => setTimeout(r, 1000));
 
     console.log('\nChecking if user is in database...');
-    const allUsers = database.db.prepare('SELECT * FROM users WHERE username = ?').all(testUser.username);
+    const allUsers = await database.all('SELECT * FROM users WHERE username = ?', [testUser.username]);
     console.log('Found users:', allUsers);
 
   } catch (error: any) {
