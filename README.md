@@ -341,6 +341,10 @@ The application includes the following key user interfaces:
 ### 1. **Authentication Pages**
 - **Login Page**: Clean login interface with email/password fields and JWT token-based authentication
 - **Registration Page**: User registration form with validation for username, email, and password
+  ![Login Page](screenshots/login.png)
+  ![Registration Page](screenshots/register.png)
+
+
 
 ### 2. **User Dashboard**
 - **Sweet Shop Homepage**: 
@@ -350,6 +354,10 @@ The application includes the following key user interfaces:
   - Pause/Play controls for the rotating banner
   - "View all products" navigation link
   - Auto-rotating slideshow every 5 seconds
+    
+    ![Homepage Banner](screenshots/homepage-banner.png)
+    ![Featured Products](screenshots/featured-products.png)
+
 
 - **Sweets Catalog Page**:
   - Grid layout of all available sweets with product images
@@ -360,6 +368,10 @@ The application includes the following key user interfaces:
   - Real-time search and filter results
   - Add to cart functionality with stock availability checks
 
+    ![Sweets Catalog](screenshots/sweets-catalog.png)
+    ![Filters and Search](screenshots/catalog-filters.png)
+
+
 ### 3. **Shopping Features**
 - **Shopping Cart**:
   - View all items in cart with quantities
@@ -367,12 +379,18 @@ The application includes the following key user interfaces:
   - Remove items from cart
   - Calculate total price
   - Proceed to checkout
+ 
+    ![Shopping Cart](screenshots/cart.png)
+
 
 - **Purchase History**:
   - View all past purchases with date stamps
   - Product details (name, category, quantity, price paid)
   - Total spent per purchase
   - Sortable and filterable purchase list
+
+    ![Purchase History](screenshots/purchase-history.png)
+
 
 ### 4. **Admin Dashboard**
 - **Sweets Management Tab**:
@@ -383,6 +401,10 @@ The application includes the following key user interfaces:
   - Delete sweets
   - Restock sweets (increase inventory quantity)
   - Inventory statistics (Total Products, Total Stock, Inventory Value)
+ 
+    ![Admin Sweets Management](screenshots/admin-sweets.png)
+    ![Inventory Stats](screenshots/inventory-stats.png)
+
 
 - **Purchase History Tab**:
   - View all purchases across all users
@@ -390,6 +412,9 @@ The application includes the following key user interfaces:
   - Search across all fields (product name, category, username)
   - Filter by category
   - Real-time statistics of all sales
+ 
+    ![Admin Purchase History](screenshots/admin-purchases.png)
+
 
 ### Color Scheme & Design
 - **Primary Colors**: Green gradient (#7cb342 to #558b2f) for main banner
