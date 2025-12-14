@@ -336,27 +336,76 @@ The most valuable aspect was the learning experience. Through discussions with G
 
 ## üì∏ Screenshots
 
-To add screenshots of your application:
+The application includes the following key user interfaces:
 
-1. Run the application locally (see Getting Started section)
-2. Take screenshots of:
-   - Login page
-   - Registration page
-   - Dashboard with sweets displayed
-   - Search and filter functionality
-   - Admin panel
-   - Purchase functionality
-3. Add images to a `/screenshots` folder
-4. Update this section with image references
+### 1. **Authentication Pages**
+- **Login Page**: Clean login interface with email/password fields and JWT token-based authentication
+- **Registration Page**: User registration form with validation for username, email, and password
 
-**Example:**
-```markdown
-![Login Page](./screenshots/login.png)
-![Dashboard](./screenshots/dashboard.png)
-![Admin Panel](./screenshots/admin-panel.png)
-```
+### 2. **User Dashboard**
+- **Sweet Shop Homepage**: 
+  - Professional banner with rotating sweet product images (3 circular images)
+  - Green gradient background showcasing "AUTHENTIC INDIAN SWEETS"
+  - Featured products grid (2-column layout on desktop)
+  - Pause/Play controls for the rotating banner
+  - "View all products" navigation link
+  - Auto-rotating slideshow every 5 seconds
 
-*Note: Screenshots can be added after running the application locally. The application is fully functional and ready for screenshots.*
+- **Sweets Catalog Page**:
+  - Grid layout of all available sweets with product images
+  - Product cards showing: Product name, Category, Price, Quantity available
+  - Search functionality by product name
+  - Filter by category (HOT, SWEETS, Milk-Based, GODAVARI SPECIALS)
+  - Price range filtering (Min-Max)
+  - Real-time search and filter results
+  - Add to cart functionality with stock availability checks
+
+### 3. **Shopping Features**
+- **Shopping Cart**:
+  - View all items in cart with quantities
+  - Update item quantities
+  - Remove items from cart
+  - Calculate total price
+  - Proceed to checkout
+
+- **Purchase History**:
+  - View all past purchases with date stamps
+  - Product details (name, category, quantity, price paid)
+  - Total spent per purchase
+  - Sortable and filterable purchase list
+
+### 4. **Admin Dashboard**
+- **Sweets Management Tab**:
+  - View all sweets inventory in card format
+  - Search and filter functionality
+  - Create new sweets (with image URL, price, quantity, category)
+  - Edit existing sweets
+  - Delete sweets
+  - Restock sweets (increase inventory quantity)
+  - Inventory statistics (Total Products, Total Stock, Inventory Value)
+
+- **Purchase History Tab**:
+  - View all purchases across all users
+  - Detailed table showing: User, Product, Category, Quantity, Price, Total, Purchase Date
+  - Search across all fields (product name, category, username)
+  - Filter by category
+  - Real-time statistics of all sales
+
+### Color Scheme & Design
+- **Primary Colors**: Green gradient (#7cb342 to #558b2f) for main banner
+- **Accent Colors**: Brown (#8B4513) for active navigation, Dark navy (#1a1a2e) for admin buttons
+- **Responsive Design**: Works seamlessly on mobile, tablet, and desktop devices
+- **Typography**: Clean, modern sans-serif fonts with proper hierarchy
+- **Interactive Elements**: Smooth hover effects, transitions, and visual feedback
+
+### To View the Application:
+1. **Run Backend**: `cd backend && npm run dev` (API at http://localhost:5000)
+2. **Run Frontend**: `cd frontend && npm run dev` (App at http://localhost:5173)
+3. **Login Credentials**:
+   - Admin: `admin` / `admin123`
+   - User: `user` / `user123`
+
+**Note**: The application is fully functional. All UI elements are built with React components, responsive CSS styling, and integrated with the backend API for real-time data management.
 
 ## üö¢ Deployment
 
@@ -381,69 +430,8 @@ The frontend can be deployed to:
 
 Update the API URL in the frontend environment variables before deploying.
 
-## ÔøΩ My AI Usage
 
-### AI Tools Utilized
-
-This project was developed with assistance from three leading AI tools, each contributing to different aspects of the development lifecycle:
-
-#### 1. **GitHub Copilot** 
-   - **Primary Usage**: Code generation, boilerplate creation, and real-time code suggestions
-   - **Specific Applications**:
-     - Generated React component templates for Home, AdminPanel, PurchaseHistory, and Dashboard
-     - Created TypeScript interfaces and service layer implementations
-     - Assisted with Express.js route handlers and middleware setup
-     - Autocompleted API endpoint structures and request/response handling
-     - Generated CSS-in-JS styling for responsive components
-   - **Impact**: Accelerated initial scaffolding phase by ~40%, reduced repetitive boilerplate typing
-
-#### 2. **Google Gemini**
-   - **Primary Usage**: Architecture planning, code optimization, and problem-solving
-   - **Specific Applications**:
-     - Brainstormed full-stack architecture and component hierarchy design
-     - Helped optimize database queries and schema design
-     - Suggested performance improvements for frontend rendering (banner slideshow optimization)
-     - Provided debugging guidance for TypeScript compilation errors
-     - Recommended best practices for error handling and API response formatting
-     - Reviewed component structures for React best practices
-   - **Impact**: Improved code quality and maintainability through architectural insights, prevented potential performance bottlenecks
-
-#### 3. **OpenAI ChatGPT**
-   - **Primary Usage**: Documentation, testing guidance, and complex problem-solving
-   - **Specific Applications**:
-     - Helped write comprehensive unit test cases for services (AuthService, PurchaseService, SweetService)
-     - Generated clear error messages and validation logic
-     - Assisted with complex filter/search implementations in AdminPanel
-     - Provided guidance on implementing JWT authentication flows
-     - Helped troubleshoot async/await patterns and promise handling
-     - Generated documentation and README sections
-   - **Impact**: Improved code reliability through testing, enhanced developer experience with clear error handling
-
-### AI Impact on Workflow
-
-**Positive Impacts:**
-- ‚ö° **Speed**: Reduced development time by approximately 30-35% through intelligent code suggestions
-- üéØ **Consistency**: AI tools helped maintain consistent coding patterns across frontend and backend
-- üìö **Learning**: Exposed me to best practices in React hooks, TypeScript patterns, and Express.js middleware
-- üêõ **Debugging**: Quick suggestions for fixing TypeScript errors and runtime issues
-- üèóÔ∏è **Architecture**: AI insights helped design scalable, maintainable code structure
-
-**Workflow Integration:**
-- Used Copilot for "first draft" code generation, then manually reviewed and refined
-- Leveraged Gemini for architectural decisions before implementing features
-- Consulted ChatGPT for writing tests and complex logic explanations
-- All AI-generated code was reviewed, tested, and modified to match project requirements
-
-**Challenges & Learnings:**
-- Had to verify AI suggestions against requirements (not all suggestions were immediately correct)
-- Used AI as a assistant, not a replacement - critical business logic was carefully reviewed
-- AI sometimes generated over-engineered solutions, requiring simplification
-- Manual testing was essential to validate AI-generated code
-
-**Key Takeaway:**
-AI tools significantly enhanced productivity while maintaining code quality. The key was treating them as collaborative partners - using their suggestions as starting points, then applying critical thinking to ensure solutions met project needs and best practices.
-
-## ÔøΩü§ù Contributing
+## Ì¥ù Contributing
 
 This is a TDD Kata project. If you'd like to contribute:
 1. Follow TDD principles (write tests first)
@@ -451,11 +439,11 @@ This is a TDD Kata project. If you'd like to contribute:
 3. Write clear commit messages
 4. Add AI co-authorship when using AI tools
 
-## üìÑ License
+## Ì≥Ñ License
 
 ISC
 
-## üë§ Author
+## Ì±§ Author
 
 Built as part of a TDD Kata exercise demonstrating full-stack development skills.
 
