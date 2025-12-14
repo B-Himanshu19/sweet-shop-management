@@ -431,7 +431,7 @@ The frontend can be deployed to:
 Update the API URL in the frontend environment variables before deploying.
 
 
-## í´ Contributing
+## ï¿½ï¿½ï¿½ Contributing
 
 This is a TDD Kata project. If you'd like to contribute:
 1. Follow TDD principles (write tests first)
@@ -439,11 +439,11 @@ This is a TDD Kata project. If you'd like to contribute:
 3. Write clear commit messages
 4. Add AI co-authorship when using AI tools
 
-## í³„ License
+## ï¿½ï¿½ï¿½ License
 
 ISC
 
-## í±¤ Author
+## ï¿½ï¿½ï¿½ Author
 
 Built as part of a TDD Kata exercise demonstrating full-stack development skills.
 
