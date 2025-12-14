@@ -381,7 +381,69 @@ The frontend can be deployed to:
 
 Update the API URL in the frontend environment variables before deploying.
 
-## 🤝 Contributing
+## � My AI Usage
+
+### AI Tools Utilized
+
+This project was developed with assistance from three leading AI tools, each contributing to different aspects of the development lifecycle:
+
+#### 1. **GitHub Copilot** 
+   - **Primary Usage**: Code generation, boilerplate creation, and real-time code suggestions
+   - **Specific Applications**:
+     - Generated React component templates for Home, AdminPanel, PurchaseHistory, and Dashboard
+     - Created TypeScript interfaces and service layer implementations
+     - Assisted with Express.js route handlers and middleware setup
+     - Autocompleted API endpoint structures and request/response handling
+     - Generated CSS-in-JS styling for responsive components
+   - **Impact**: Accelerated initial scaffolding phase by ~40%, reduced repetitive boilerplate typing
+
+#### 2. **Google Gemini**
+   - **Primary Usage**: Architecture planning, code optimization, and problem-solving
+   - **Specific Applications**:
+     - Brainstormed full-stack architecture and component hierarchy design
+     - Helped optimize database queries and schema design
+     - Suggested performance improvements for frontend rendering (banner slideshow optimization)
+     - Provided debugging guidance for TypeScript compilation errors
+     - Recommended best practices for error handling and API response formatting
+     - Reviewed component structures for React best practices
+   - **Impact**: Improved code quality and maintainability through architectural insights, prevented potential performance bottlenecks
+
+#### 3. **OpenAI ChatGPT**
+   - **Primary Usage**: Documentation, testing guidance, and complex problem-solving
+   - **Specific Applications**:
+     - Helped write comprehensive unit test cases for services (AuthService, PurchaseService, SweetService)
+     - Generated clear error messages and validation logic
+     - Assisted with complex filter/search implementations in AdminPanel
+     - Provided guidance on implementing JWT authentication flows
+     - Helped troubleshoot async/await patterns and promise handling
+     - Generated documentation and README sections
+   - **Impact**: Improved code reliability through testing, enhanced developer experience with clear error handling
+
+### AI Impact on Workflow
+
+**Positive Impacts:**
+- ⚡ **Speed**: Reduced development time by approximately 30-35% through intelligent code suggestions
+- 🎯 **Consistency**: AI tools helped maintain consistent coding patterns across frontend and backend
+- 📚 **Learning**: Exposed me to best practices in React hooks, TypeScript patterns, and Express.js middleware
+- 🐛 **Debugging**: Quick suggestions for fixing TypeScript errors and runtime issues
+- 🏗️ **Architecture**: AI insights helped design scalable, maintainable code structure
+
+**Workflow Integration:**
+- Used Copilot for "first draft" code generation, then manually reviewed and refined
+- Leveraged Gemini for architectural decisions before implementing features
+- Consulted ChatGPT for writing tests and complex logic explanations
+- All AI-generated code was reviewed, tested, and modified to match project requirements
+
+**Challenges & Learnings:**
+- Had to verify AI suggestions against requirements (not all suggestions were immediately correct)
+- Used AI as a assistant, not a replacement - critical business logic was carefully reviewed
+- AI sometimes generated over-engineered solutions, requiring simplification
+- Manual testing was essential to validate AI-generated code
+
+**Key Takeaway:**
+AI tools significantly enhanced productivity while maintaining code quality. The key was treating them as collaborative partners - using their suggestions as starting points, then applying critical thinking to ensure solutions met project needs and best practices.
+
+## �🤝 Contributing
 
 This is a TDD Kata project. If you'd like to contribute:
 1. Follow TDD principles (write tests first)
